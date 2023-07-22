@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track IP</title>
+</head>
+<body>
+  <h1 id="ip-header">
+    Hello Kirtesh
+  </h1>
+  <script>
+
+    // Using Thirdparty 
+    // fetch('https://api.ipify.org')
+    //   .then((res) => res.text())
+    //   .then((ip) => console.log(ip))
+    //   .catch((err) => console.log(err))
+
+    let globalIp;
+    // Using own server
+    const res = fetch('https://api.ipify.org')
+      .then((res) => res.text())
+      // .then((ip) => console.log(ip))
+      .then((ip) => showIP(ip))
+      // .then((payload) => console.log(payload))
+      .catch((err) => console.log(err))
+    
+
+      const showIP = (ip) => {
+        const ipHeader = document.getElementById('ip-header').innerText = ip;
+      }
+
+  </script>
+</body>
+</html>
