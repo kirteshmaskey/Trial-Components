@@ -1,0 +1,17 @@
+{
+  "name": "sms-twilio",
+  "version": "1.0.0",
+  "description": "Sending SMS using twilio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kirtesh Maskey",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22",
+    "twilio": "^4.11.0"
+  }
+}
