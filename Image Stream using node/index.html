@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display Images from Server</title>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    function ImageGallery() {
+      const [imageUrls, setImageUrls] = React.useState([]);
+
+      React.useEffect(() => {
+        fetch('http://localhost:3001/stream-multiple-images')
+          .then(response => {
+            const reader = response.body.getReader();
+            return reader;
+          })
+          .then(reader => {
+            const stream = new ReadableStream({
+              start(controller) {
+                function push() {
+                  reader.read().then(({ done, value }) => {
+                    if (done) {
+                      controller.close();
+                      return;
+                    }
+                    controller.enqueue(value);
+                    push();
+                  });
+                }
+                push();
+              }
+            });
+
+            return new Response(stream);
+          })
+          .then(response => {
+            const reader = response.body.getReader();
+            let data = '';
+
+            function read() {
+              reader.read().then(({ done, value }) => {
+                if (done) {
+                  // const urls = data.split('newline').filter(url => url.trim() !== '');
+                  // setImageUrls(urls);
+                  // console.log(urls)
+                  // return;
+
+                  const chunks = data.split('newline').filter(url => url.trim() !== '');
+                  // setImageUrls(urls);
+                  
+                  for(let chunk of chunks) {
+                    // const im = chunk.blob()
+                    const blob = new Blob(chunk, { type: 'image/jpeg' }); // Assuming images are JPEG
+                    console.log("chunk", blob)
+                    // const url = URL.createObjectURL(blob);
+                    // console.log('Image URL:', url); // Log the image URL
+                    // setImageUrls(prevUrls => [...prevUrls, url]);
+                  }
+                  return;
+                }
+                data += new TextDecoder().decode(value);
+                read();
+              });
+            }
+
+            read();
+          })
+          .catch(error => {
+            console.error('Error fetching images:', error);
+          });
+      }, []);
+
+      return (
+        <div>
+          <h1>Image Gallery</h1>
+          <div className="image-container">
+            {imageUrls.map((imageUrl, index) => (
+              <img key={index} src={imageUrl} alt={`Image ${index}`} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<ImageGallery />, document.getElementById('root'));
+  </script>
+</body>
+</html>
+
